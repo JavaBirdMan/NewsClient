@@ -1,0 +1,3 @@
+# newsclient
+新闻客户端
+使用的第三方库Slidingmenu、androidViewPagerIndicator
