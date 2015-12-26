@@ -90,6 +90,7 @@
     <orderEntry type="library" exported="" name="volly-1.0.11" level="project" />
     <orderEntry type="library" exported="" name="xUtils-2.6.14" level="project" />
     <orderEntry type="library" exported="" name="butterknife-5.1.1" level="project" />
+    <orderEntry type="module" module-name="androidPullToRefreshlibrary" exported="" />
     <orderEntry type="module" module-name="SlidingMenu_library" exported="" />
     <orderEntry type="module" module-name="androidViewPagerIndicator_library" exported="" />
     <orderEntry type="library" exported="" name="org.apache.http.legacy-android-23" level="project" />
