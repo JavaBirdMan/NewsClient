@@ -66,7 +66,7 @@ public class RollViewPager extends ViewPager  {
 						if ((upTime - downTime) > 500) {
 
 						} else {
-//							Toast.makeText(mContext, "我被点击了", Toast.LENGTH_SHORT).show();
+							Toast.makeText(mContext, "我被点击了", Toast.LENGTH_SHORT).show();
 							mViewPagerOnTouchListener.onViewPagerClickListener();
 						}
 						start();
