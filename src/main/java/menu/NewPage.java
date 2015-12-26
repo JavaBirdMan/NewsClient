@@ -100,6 +100,7 @@ public class NewPage extends BasePage {
 //            System.out.println("title..."+title);
 
             return mNewItem.children.get(position).title ;
+
         }
 
         @Override

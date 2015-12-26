@@ -121,7 +121,7 @@ public class NewItemPage extends BasePage {
                }
 
                 //设置自动跳动
-                RollViewPager rollViewPager = new RollViewPager(mContext);
+                RollViewPager rollViewPager = new RollViewPager(mContext,mDots);
                 //设置标题数据
                 rollViewPager.setTextTitle(top_news_title,mTitles);
                 //设置背景图片

@@ -17,14 +17,15 @@ import com.lidroid.xutils.BitmapUtils;
 import com.sunpeng.newsclient.R;
 
 public class RollViewPager extends ViewPager implements OnPageChangeListener {
+	public Context mContext;
+	private List<View> mDotLists;
 
 	public RollViewPager(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
 	}
 
-	public Context mContext;
-	private List<View> mDotLists;
+
 
 	public RollViewPager(Context context, List<View> mDotLists) {
 		super(context);
