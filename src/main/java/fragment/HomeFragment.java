@@ -66,7 +66,9 @@ public class HomeFragment extends BaseFragment implements LazyViewPager.OnPageCh
             case R.id.rb_news_center:
                 mViewPager.setCurrentItem(1);
                 ((HomeActivity) getActivity()).getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-                mDataList.get(1).onResume();
+                if (null!=mDataList&&mDataList.size()>0){
+                    mDataList.get(1).onResume();
+                }
               /*  if (null!=mMenuFragment2){
                     mMenuFragment2.setMenuType(MenuFragment2.NEWCENTER);
                 }*/
@@ -77,7 +79,11 @@ public class HomeFragment extends BaseFragment implements LazyViewPager.OnPageCh
             case R.id.rb_smart_service:
                 mViewPager.setCurrentItem(2);
                 ((HomeActivity) getActivity()).getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-                mDataList.get(2).onResume();
+                if (null!=mDataList&&mDataList.size()>0){
+                    mDataList.get(2).onResume();
+                }
+
+
                /* if (null!=mMenuFragment2){
                     mMenuFragment2.setMenuType(MenuFragment2.SERVICE);
                 }*/
@@ -88,7 +94,9 @@ public class HomeFragment extends BaseFragment implements LazyViewPager.OnPageCh
             case R.id.rb_gov_affairs:
                 mViewPager.setCurrentItem(3);
                 ((HomeActivity) getActivity()).getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-                mDataList.get(3).onResume();
+                if (null!=mDataList&&mDataList.size()>0){
+                    mDataList.get(3).onResume();
+                }
              /*   if (null!=mMenuFragment2){
                     mMenuFragment2.setMenuType(MenuFragment2.AFFAIRS);
                 }*/
@@ -100,7 +108,9 @@ public class HomeFragment extends BaseFragment implements LazyViewPager.OnPageCh
             case R.id.rb_setting:
                 mViewPager.setCurrentItem(4);
                 ((HomeActivity) getActivity()).getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
-                mDataList.get(4).onResume();
+                if (null!=mDataList&&mDataList.size()>0){
+                    mDataList.get(4).onResume();
+                }
                 break;
 
         }

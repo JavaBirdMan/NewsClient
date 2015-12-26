@@ -71,7 +71,8 @@ public class NewPage extends BasePage {
             @Override
             public void onPageSelected(int position) {
                 mcurrentItem = position;
-
+                //
+                onResume();
                 NewItemPage newItemPage = mDatas.get(position);
                 if (!newItemPage.isLoading) {
                     newItemPage.initData();

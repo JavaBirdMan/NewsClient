@@ -1,39 +1,110 @@
 package view;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap.Config;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lidroid.xutils.BitmapUtils;
 import com.sunpeng.newsclient.R;
 
-public class RollViewPager extends ViewPager implements OnPageChangeListener {
+import java.util.List;
+
+
+public class RollViewPager extends ViewPager  {
 	public Context mContext;
 	private List<View> mDotLists;
+	private int downX;
+	private int downY;
+	private long downTime;
+	private ViewPagerOnTouchListener mViewPagerOnTouchListener;
+
+
+	//给Viewpager设置一个点击事件
+	public interface ViewPagerOnTouchListener{
+		public void onViewPagerClickListener();
+	}
+
 
 	public RollViewPager(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
+
 	}
 
 
 
-	public RollViewPager(Context context, List<View> mDotLists) {
+	public RollViewPager(Context context, List<View> mDotLists,ViewPagerOnTouchListener viewPagerOnTouchListener) {
 		super(context);
 		this.mContext =context;
 		this.mDotLists = mDotLists;
-		mBitmapUtils = new BitmapUtils(mContext);
+		this.mViewPagerOnTouchListener=viewPagerOnTouchListener;
+		mBitmapUtils = new BitmapUtils(context);
 		mBitmapUtils.configDefaultBitmapConfig(Config.ARGB_4444);
 		mTask = new Task();
+		RollViewPager.this.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+					//当手指按下时停止滚动
+					case MotionEvent.ACTION_DOWN:
+						handler.removeCallbacksAndMessages(null);
+						//获取按下的时间
+						downTime = System.currentTimeMillis();
+						break;
+					//当手指抬起时继续滚动
+					case MotionEvent.ACTION_UP:
+						//获取当前的时间
+						long upTime = System.currentTimeMillis();
+						//长按
+						if ((upTime - downTime) > 500) {
+
+						} else {
+//							Toast.makeText(mContext, "我被点击了", Toast.LENGTH_SHORT).show();
+							mViewPagerOnTouchListener.onViewPagerClickListener();
+						}
+						start();
+						break;
+					case MotionEvent.ACTION_CANCEL:
+						System.out.println("ACTION_CANCEL");
+						break;
+
+				}
+				return false;
+			}
+		});
+	}
+
+	//处理viewpager时间分发的bug
+	private boolean isMove = false;
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+
+		switch (ev.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				downX = (int) ev.getX();
+				downY = (int) ev.getY();
+				break;
+			case MotionEvent.ACTION_MOVE:
+				int currentX = (int) ev.getX();
+				int currentY = (int) ev.getY();
+				if (Math.abs(currentX- downX)>Math.abs(currentY-downY)){
+					isMove=false;
+				}else{
+					isMove=true;
+				}
+
+				break;
+
+		}
+		getParent().requestDisallowInterceptTouchEvent(!isMove);
+			return super.dispatchTouchEvent(ev);
 	}
 
 	private boolean hasAdapter = false;
@@ -44,13 +115,49 @@ public class RollViewPager extends ViewPager implements OnPageChangeListener {
 			hasAdapter = true;
 			RollViewPagerAdapter adapter = new RollViewPagerAdapter();
 			RollViewPager.this.setAdapter(adapter);
-			RollViewPager.this.setOnPageChangeListener(this);
+			RollViewPager.this.setOnPageChangeListener(new OnPageChangeListener() {
+				@Override
+				public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+				}
+
+				@Override
+				public void onPageSelected(int position) {
+
+					mCurrentItem = position;
+
+					if (null != mTitleLists && mTitleLists.size() > 0
+							&& null != mTopNewsTitle) {
+						mTopNewsTitle.setText(mTitleLists.get(position));
+					}
+
+					if (null != mDotLists && mDotLists.size() > 0) {
+						mDotLists.get(position).setBackgroundResource(R.drawable.dot_focus);
+						mDotLists.get(oldPosition).setBackgroundResource(
+								R.drawable.dot_normal);
+					}
+					oldPosition = position;
+
+
+				}
+
+				@Override
+				public void onPageScrollStateChanged(int state) {
+
+				}
+			});
 		}
+		//因为发消息所以点才会动，如果不发消息，点会一直在第一个位置，不会动
 		handler.postDelayed(mTask, 2000);
 	}
 
 	// 当前的位置
 	private int mCurrentItem = 0;
+
+	//让点停止
+	public void stop() {
+		handler.removeCallbacksAndMessages(null);
+	}
 
 	private class Task implements Runnable {
 
@@ -132,34 +239,5 @@ public class RollViewPager extends ViewPager implements OnPageChangeListener {
 
 	}
 
-	@Override
-	public void onPageScrollStateChanged(int arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPageSelected(int arg0) {
-		mCurrentItem = arg0;
-
-		if (null != mTitleLists && mTitleLists.size() > 0
-				&& null != mTopNewsTitle) {
-			mTopNewsTitle.setText(mTitleLists.get(arg0));
-		}
-
-		if (null != mDotLists && mDotLists.size() > 0) {
-			mDotLists.get(arg0).setBackgroundResource(R.drawable.dot_focus);
-			mDotLists.get(oldPosition).setBackgroundResource(
-					R.drawable.dot_normal);
-		}
-		oldPosition = arg0;
-
-	}
-
-	@Override
-	public void onPageScrolled(int position, float positionOffset,
-			int positionOffsetPixels) {
-
-	}
 
 }

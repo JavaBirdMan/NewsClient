@@ -2,10 +2,13 @@ package menu;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.ViewUtils;
@@ -27,6 +30,7 @@ import utils.CommonUtil;
 import utils.DensityUtil;
 import utils.GsonTools;
 import utils.HMAPI;
+import utils.SharePrefencesUtils;
 import view.RollViewPager;
 
 /**
@@ -47,6 +51,7 @@ public class NewItemPage extends BasePage {
     @ViewInject(R.id.dots_ll)
     private LinearLayout dots_ll;
     private View topView;
+    private RollViewPager rollViewPager;
 
     public NewItemPage(Context context,String url) {
         super(context);
@@ -62,12 +67,29 @@ public class NewItemPage extends BasePage {
 //        TextView textView = new TextView(mContext);
 //        textView.setText("cccc");
 //        textView.setTextColor(Color.BLACK);
+        //给ListView设置条目点击事件，设置一个标志记录ListView条目是否被点击过
+        lv_item_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                NewItemData.News item = (NewItemData.News) lv_item_news.getItemAtPosition(position);
+                //判断当前的条目是否读过
+                if (!item.isRead){
+                    item.isRead=true;
+                }
+                mNewItemAdapter.notifyDataSetChanged();
+
+            }
+        });
 
         return view;
     }
 
     @Override
     public void initData() {
+        String result = SharePrefencesUtils.getString(mContext, HMAPI.BASE_URL + url, "");
+        if (!TextUtils.isEmpty(result)){
+            progressData(result);
+        }
         getNewItemData();
 
     }
@@ -80,8 +102,9 @@ public class NewItemPage extends BasePage {
                 //// TODO: 2015/12/25 打印jason
 //                System.out.println(">>>"+responseInfo.result+"<<");
 //                System.out.println(">>>url<<<<"+url);
-
-                    progressData(responseInfo.result);
+                //缓存新闻数据
+                SharePrefencesUtils.saveString(mContext,HMAPI.BASE_URL + url,responseInfo.result);
+                progressData(responseInfo.result);
             }
 
             @Override
@@ -99,6 +122,9 @@ public class NewItemPage extends BasePage {
         NewItemData newItemData = GsonTools.changeGsonToBean(result, NewItemData.class);
         if (null!= newItemData){
             if (newItemData.retcode==200){
+                if (null!=rollViewPager){
+                    rollViewPager.stop();
+                }
                 mNews.clear();
                 isLoading=true;
                 //获取热门新闻
@@ -121,9 +147,14 @@ public class NewItemPage extends BasePage {
                }
 
                 //设置自动跳动
-                RollViewPager rollViewPager = new RollViewPager(mContext,mDots);
+                rollViewPager = new RollViewPager(mContext,mDots, new RollViewPager.ViewPagerOnTouchListener() {
+                    @Override
+                    public void onViewPagerClickListener() {
+                        Toast.makeText(mContext,"卧槽谁点我",Toast.LENGTH_SHORT).show();
+                    }
+                });
                 //设置标题数据
-                rollViewPager.setTextTitle(top_news_title,mTitles);
+                rollViewPager.setTextTitle(top_news_title, mTitles);
                 //设置背景图片
                 rollViewPager.setImageRes(mImageLists);
                 //开始滚动
@@ -131,7 +162,12 @@ public class NewItemPage extends BasePage {
                 //添加到轮播图
                 top_news_viewpager.removeAllViews();
                 top_news_viewpager.addView(rollViewPager);
-                lv_item_news.addHeaderView(topView);
+                //判断ListView是否有头部，如果有的话就不添加如果没有就添加，但是这里轮播图的点会出现两次
+                if (lv_item_news.getHeaderViewsCount()<1){
+
+                    lv_item_news.addHeaderView(topView);
+                }
+
 
                 if (mNewItemAdapter==null){
                     mNewItemAdapter = new NewItemAdapter(mNews,mContext);

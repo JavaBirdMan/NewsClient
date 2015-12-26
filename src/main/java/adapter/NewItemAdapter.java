@@ -2,6 +2,7 @@ package adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,6 +37,15 @@ public class NewItemAdapter extends MyBaseAdapter<NewItemData.News> {
         TextView tv_title = (TextView) convertView.findViewById(R.id.tv_title);
         TextView tv_pub_date = (TextView) convertView.findViewById(R.id.tv_pub_date);
         ImageView iv_img = (ImageView) convertView.findViewById(R.id.iv_img);
+        NewItemData.News news = mData.get(position);
+        if (news.isRead){
+            //已经度过标记为红色
+            tv_title.setTextColor(Color.GRAY);
+        }else{
+            //没有读过设置为黑色
+            tv_title.setTextColor(Color.BLACK);
+
+        }
         tv_title.setText(mData.get(position).title);
         tv_pub_date.setText(mData.get(position).pubdate);
         mBitmapUtils.display(iv_img,mData.get(position).listimage);

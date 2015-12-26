@@ -37,6 +37,7 @@ public class NewItemData {
 		public String title;
 		public String type;
 		public String url;
+		public boolean isRead;
 		
 		
 	}
